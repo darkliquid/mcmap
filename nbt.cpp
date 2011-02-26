@@ -393,3 +393,29 @@ bool NBT_Tag::getByteArray(string name, uint8_t* &data, int &len)
 	len = (*_elems)[name]->_len;
 	return true;
 }
+
+bool NBT_Tag::getList(string name, list<NBT_Tag *>* &data)
+{
+	if (_type != tagCompound || _elems->find(name) == _elems->end() || (*_elems)[name]->getType() != tagList) {
+		return false;
+	}
+	data = (*_elems)[name]->_list;
+	return true;
+}
+
+bool NBT_Tag::getString(string name, string &data, int &len)
+{
+	if (_type != tagCompound || _elems->find(name) == _elems->end() || (*_elems)[name]->getType() != tagString) {
+		return false;
+	}
+
+  char *buf;
+  len = (*_elems)[name]->_len;
+  buf = new char[len+1];
+  memcpy(buf, (*_elems)[name]->_data + 2, len);
+  buf[len] = 0; // we need to zero-terminate the string
+  data = string(buf);
+  delete[] buf;
+	return true;
+}
+

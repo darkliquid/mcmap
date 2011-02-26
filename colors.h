@@ -64,6 +64,8 @@ bool loadBiomeColors(const char* path);
 #define COBBLESTEP 235
 #define PINELEAVES 236
 #define BIRCHLEAVES 237
+#define SIGN 63
+#define WALLSIGN 68
 //#define VOIDBLOCK 255 // This will hopefully never be a valid block id in the near future :-)
 
 #endif

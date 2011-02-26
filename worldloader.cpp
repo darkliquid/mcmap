@@ -320,6 +320,62 @@ static bool loadChunk(const char *streamOrFile, size_t streamLen)
 			return false;
 		}
 	}
+  if (true) { // get tile entity data
+    list<NBT_Tag *> *tile_entity_data;
+    ok = level->getList("TileEntities", tile_entity_data);
+    if (!ok) {
+      printf("No entity data\n");
+    } else {
+      list<NBT_Tag *>::iterator i = tile_entity_data->begin();
+      while(i != tile_entity_data->end()) {
+        int32_t len;
+        string entity_id;
+        ok = (*i)->getString("id", entity_id, len);
+        //printf("Entity: %s\n", entity_id.c_str());
+        if (ok && entity_id == string("Sign")) {
+          printf("Found sign...\n");
+          int32_t x;
+          int32_t y;
+          int32_t z;
+          string sign1;
+          string sign2;
+          string sign3;
+          string sign4;
+          string output;
+          if(!(*i)->getInt("x", x) || !(*i)->getInt("y", y) || !(*i)->getInt("z", z)) {
+            printf("Sign coordinates are missing!\n");
+          } else {
+            printf("Sign found at %d, %d, %d\n", x, y, z);
+            if((*i)->getString("Text1", sign1, len)) {
+              if(len > 0) {
+                output.append(sign1);
+                output.append("\n");
+              }
+            }
+            if((*i)->getString("Text2", sign2, len)) {
+              if(len > 0) {
+                output.append(sign2);
+                output.append("\n");
+              }
+            }
+            if((*i)->getString("Text3", sign3, len)) {
+              if(len > 0) {
+                output.append(sign3);
+                output.append("\n");
+              }
+            }
+            if((*i)->getString("Text4", sign4, len)) {
+              if(len > 0) {
+                output.append(sign4);
+              }
+            }
+            printf("Sign says: %s\n", output.c_str());
+          }
+        }
+        i++;
+      }
+    }
+  }
 	// Update bounds for cropping if necessary
 	int crop;
 	if (g_Orientation == North) {
