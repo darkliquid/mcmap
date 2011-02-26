@@ -164,6 +164,8 @@ int main(int argc, char **argv)
 					return 1;
 				}
 				infoFile = NEXTARG;
+      } else if (strcmp(option, "-signs") == 0) {
+        g_Signs = true;
 			} else if (strcmp(option, "-dumpcolors") == 0) {
 				dumpColors = true;
 			} else if (strcmp(option, "-north") == 0) {
@@ -1030,6 +1032,7 @@ void printHelp(char *binary)
 	   "  -biomes       apply biome colors to grass/leaves; requires that you run\n"
 	   "                Donkey Kong's biome extractor first on your world\n"
 	   "  -biomecolors PATH  load grasscolor.png and foliagecolor.png from 'PATH'\n"
+     "  -signs        Include sign data in info file\n"
 	   "  -info NAME    Write information about map to file 'NAME' You can choose the\n"
 	   "                format by using file extensions .xml, .json or .txt (default)\n"
 	   "\n    WORLDPATH is the path of the desired alpha world.\n\n"

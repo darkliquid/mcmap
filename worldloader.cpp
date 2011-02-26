@@ -320,7 +320,7 @@ static bool loadChunk(const char *streamOrFile, size_t streamLen)
 			return false;
 		}
 	}
-  if (true) { // get tile entity data
+  if (g_Signs) { // get tile entity data
     list<NBT_Tag *> *tile_entity_data;
     ok = level->getList("TileEntities", tile_entity_data);
     if (!ok) {
@@ -369,7 +369,7 @@ static bool loadChunk(const char *streamOrFile, size_t streamLen)
                 output.append(sign4);
               }
             }
-            printf("Sign says: %s\n", output.c_str());
+            printf("Sign says:\n%s\n", output.c_str());
           }
         }
         i++;
