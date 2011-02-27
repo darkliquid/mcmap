@@ -409,13 +409,13 @@ bool NBT_Tag::getString(string name, string &data, int &len)
 		return false;
 	}
 
-  char *buf;
-  len = (*_elems)[name]->_len;
-  buf = new char[len+1];
-  memcpy(buf, (*_elems)[name]->_data + 2, len);
-  buf[len] = 0; // we need to zero-terminate the string
-  data = string(buf);
-  delete[] buf;
+	char *buf;
+	len = (*_elems)[name]->_len;
+	buf = new char[len+1];
+	memcpy(buf, (*_elems)[name]->_data + 2, len);
+	buf[len] = 0; // we need to zero-terminate the string
+	data = string(buf);
+	delete[] buf;
 	return true;
 }
 

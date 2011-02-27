@@ -7,7 +7,6 @@
 #include "helper.h"
 
 using std::string;
-using std::wstring;
 using std::map;
 using std::list;
 
@@ -49,8 +48,8 @@ public:
 	bool getInt(string name, int32_t &value);
 	bool getLong(string name, int64_t &value);
 	bool getByteArray(string name, uint8_t* &data, int &len);
-  bool getList(string name, list<NBT_Tag *> * &data);
-  bool getString(string name, string &data, int &len);
+	bool getList(string name, list<NBT_Tag *> * &data);
+	bool getString(string name, string &data, int &len);
 	TagType getType() {
 		return _type;
 	}
