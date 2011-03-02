@@ -502,10 +502,6 @@ int main(int argc, char **argv)
 				int bmpPosY = int(g_MapsizeY * g_OffsetY + z + x - CHUNKSIZE_Z - CHUNKSIZE_X + (splitImage ? 0 : bitmapStartY - cropTop)) + 2 - (HEIGHTAT(x, z) & 0xFF) * g_OffsetY;
 				const size_t max = (HEIGHTAT(x, z) & 0xFF00) >> 8;
 
-				if(x == 15 + CHUNKSIZE_X && z == 4 + CHUNKSIZE_Z) {
-					printf("y max for x=%d, z=%d is %d\n", x, z, max);
-				}
-
 				for (size_t y = uint8_t(HEIGHTAT(x, z)); y < max; ++y) {
 					bmpPosY -= g_OffsetY;
 					uint8_t &c = BLOCKAT(x, y, z);
@@ -515,6 +511,9 @@ int main(int argc, char **argv)
 						loc.x = x; 
 						loc.y = y; 
 						loc.z = z;
+						if(c == SIGN) {
+							printf("Block at %d, %d, %d = %d\n", x, y, z, c);
+						}
 						string sign_text = TileEntities[loc];
 						if(!sign_text.empty()) {
 							printf("Found sign at %d, %d, %d saying:\n%s", x, y, z, sign_text.c_str());

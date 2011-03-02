@@ -394,9 +394,32 @@ static bool loadChunk(const char *streamOrFile, size_t streamLen)
 					if(!(*i)->getInt("x", x) || !(*i)->getInt("y", y) || !(*i)->getInt("z", z)) {
 						//printf("Sign coordinates are missing!\n");
 					} else {
-						// not sure why I need to half the offset but it seems to work
-						x += (offsetx / 2);
-						z += (offsetz / 2);
+						printf("offsetx = %d, offsetz = %d\n", offsetx, offsetz);
+						printf("Pre-offset, sign at: %d, %d, %d\n", x, y, z);
+
+						// Need to test all the below with multiple different
+						// coordinates and map sizes to make sure it works
+						// for more than my singular test map
+						// Should probably look at swapping x and y
+						if (g_Orientation == East) {
+							// No idea why this works, needs more testing
+							x += (offsetx * 2) + CHUNKSIZE_X / 4 + 1;
+							z += (offsetz * 2) + CHUNKSIZE_Z * 3 - 4;
+						} else if (g_Orientation == North) {
+							// North transform seems the simplest
+							x += (offsetx * 2);
+							z += (offsetz * 2) - CHUNKSIZE_Z;
+						} else if (g_Orientation == South) {
+							// likewise, not seeing where this transform comes from
+							x += (offsetx * 2) + 4 * CHUNKSIZE_X + 1;
+							z += (offsetz * 2) + 1.5 * CHUNKSIZE_Z - 1;
+						} else {
+							// still need to do this one
+							x += (offsetx * 2);
+							z += (offsetz * 2) - CHUNKSIZE_Z;
+						}
+						
+						printf("Post-offset, sign at: %d, %d, %d\n", x, y, z);
 						
 						if((*i)->getString("Text1", sign1, len)) {
 							if(len > 0) {
