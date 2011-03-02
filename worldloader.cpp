@@ -320,62 +320,6 @@ static bool loadChunk(const char *streamOrFile, size_t streamLen)
 			return false;
 		}
 	}
-	if (g_Signs) { // get tile entity data
-		list<NBT_Tag *> *tile_entity_data;
-		ok = level->getList("TileEntities", tile_entity_data);
-		if (!ok) {
-			printf("No entity data\n");
-		} else {
-			list<NBT_Tag *>::iterator i = tile_entity_data->begin();
-			while(i != tile_entity_data->end()) {
-				int32_t len;
-				string entity_id;
-				ok = (*i)->getString("id", entity_id, len);
-				//printf("Entity: %s\n", entity_id.c_str());
-				if (ok && entity_id == string("Sign")) {
-					printf("Found sign...\n");
-					int32_t x;
-					int32_t y;
-					int32_t z;
-					string sign1;
-					string sign2;
-					string sign3;
-					string sign4;
-					string output;
-					if(!(*i)->getInt("x", x) || !(*i)->getInt("y", y) || !(*i)->getInt("z", z)) {
-						printf("Sign coordinates are missing!\n");
-					} else {
-						printf("Sign found at %d, %d, %d\n", x, y, z);
-						if((*i)->getString("Text1", sign1, len)) {
-							if(len > 0) {
-								output.append(sign1);
-								output.append("\n");
-							}
-						}
-						if((*i)->getString("Text2", sign2, len)) {
-							if(len > 0) {
-								output.append(sign2);
-								output.append("\n");
-							}
-						}
-						if((*i)->getString("Text3", sign3, len)) {
-							if(len > 0) {
-								output.append(sign3);
-								output.append("\n");
-							}
-						}
-						if((*i)->getString("Text4", sign4, len)) {
-							if(len > 0) {
-								output.append(sign4);
-							}
-						}
-						printf("Sign says:\n%s\n", output.c_str());
-					}
-				}
-				i++;
-			}
-		}
-	}
 	// Update bounds for cropping if necessary
 	int crop;
 	if (g_Orientation == North) {
@@ -431,9 +375,83 @@ static bool loadChunk(const char *streamOrFile, size_t streamLen)
 		crop = (g_TotalToChunkX - chunkX) + (chunkZ - g_TotalFromChunkZ) - 1;
 		if (crop < cropChunkBottom) cropChunkBottom = crop;
 	}
-	//
+	// work out the offsets for blocks within this chunk
 	const int offsetz = (chunkZ - g_FromChunkZ) * CHUNKSIZE_Z;
 	const int offsetx = (chunkX - g_FromChunkX) * CHUNKSIZE_X;
+
+	// Now, if signs are enabled, get the sign data
+	if (g_Signs) { // get tile entity data
+		list<NBT_Tag *> *tile_entity_data;
+		ok = level->getList("TileEntities", tile_entity_data);
+		if (!ok) {
+			printf("No entity data\n");
+		} else {
+			list<NBT_Tag *>::iterator i = tile_entity_data->begin();
+			while(i != tile_entity_data->end()) {
+				int32_t len;
+				string entity_id;
+				ok = (*i)->getString("id", entity_id, len);
+				//printf("Entity: %s\n", entity_id.c_str());
+				if (ok && entity_id == string("Sign")) {
+					//printf("Found sign...\n");
+					int32_t x;
+					int32_t y;
+					int32_t z;
+					string sign1;
+					string sign2;
+					string sign3;
+					string sign4;
+					string output;
+					if(!(*i)->getInt("x", x) || !(*i)->getInt("y", y) || !(*i)->getInt("z", z)) {
+						//printf("Sign coordinates are missing!\n");
+					} else {
+						// not sure why I need to half the offset but it seems to work
+						x += (offsetx / 2);
+						z += (offsetz / 2);
+						
+						if((*i)->getString("Text1", sign1, len)) {
+							if(len > 0) {
+								output.append(sign1);
+								output.append("\n");
+							}
+						}
+						if((*i)->getString("Text2", sign2, len)) {
+							if(len > 0) {
+								output.append(sign2);
+								output.append("\n");
+							}
+						}
+						if((*i)->getString("Text3", sign3, len)) {
+							if(len > 0) {
+								output.append(sign3);
+								output.append("\n");
+							}
+						}
+						if((*i)->getString("Text4", sign4, len)) {
+							if(len > 0) {
+								output.append(sign4);
+							}
+						}
+						coord loc;
+						loc.y = y;
+						if (g_Orientation == North || g_Orientation == South) {
+							loc.x = x;
+							loc.z = z;
+						} else {
+							loc.x = z; 
+							loc.z = x;
+						}
+						
+						if(!output.empty()) {
+							TileEntities[loc] = output;
+						}
+					}
+				}
+				i++;
+			}
+		}
+	}
+	
 	// Now read all blocks from this chunk and copy them to the world array
 	// Rotation introduces lots of if-else blocks here :-(
 	// Maybe make the macros functions and then use pointers.... Probably not faster

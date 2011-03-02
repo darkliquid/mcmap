@@ -500,9 +500,26 @@ int main(int argc, char **argv)
 				const int bmpPosX = int((g_MapsizeZ - z - CHUNKSIZE_Z) * 2 + (x - CHUNKSIZE_X) * 2 + (splitImage ? -2 : bitmapStartX));
 				int bmpPosY = int(g_MapsizeY * g_OffsetY + z + x - CHUNKSIZE_Z - CHUNKSIZE_X + (splitImage ? 0 : bitmapStartY)) + 2 - (HEIGHTAT(x, z) & 0xFF) * g_OffsetY;
 				const size_t max = (HEIGHTAT(x, z) & 0xFF00) >> 8;
+
+				if(x == 15 + CHUNKSIZE_X && z == 4 + CHUNKSIZE_Z) {
+					printf("y max for x=%d, z=%d is %d\n", x, z, max);
+				}
+
 				for (size_t y = uint8_t(HEIGHTAT(x, z)); y < max; ++y) {
 					bmpPosY -= g_OffsetY;
 					uint8_t &c = BLOCKAT(x, y, z);
+
+					if(g_Signs) {
+						coord loc;
+						loc.x = x; 
+						loc.y = y; 
+						loc.z = z;
+						string sign_text = TileEntities[loc];
+						if(!sign_text.empty()) {
+							printf("Found sign at %d, %d, %d saying:\n%s", x, y, z, sign_text.c_str());
+						}
+					}
+
 					if (c == AIR) {
 						continue;
 					}
@@ -564,6 +581,7 @@ int main(int argc, char **argv)
 					      && (BLOCKAT(x - 1, y, z) == AIR || BLOCKAT(x, y, z - 1) == AIR)) {   // block TL/TR from this one is air = edge
 						brightnessAdjustment += 13;
 					}
+
 					setPixel(bmpPosX, bmpPosY, c, brightnessAdjustment);
 				}
 			}

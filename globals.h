@@ -5,6 +5,8 @@
 
 #include <stdint.h>
 #include <cstdlib>
+#include <map>
+#include <string>
 
 #define UNDEFINED 0x7FFFFFFF
 
@@ -13,6 +15,36 @@ enum Orientation {
 	East,
 	South,
 	West
+};
+
+struct coord {
+	int x, y, z;
+	
+	bool operator()(const coord &a, const coord &b) {
+		if (a.z < b.z) {
+			return true;
+		} else if (a.y < b.y) {
+			return true;
+		} else if (a.x < b.x) {
+			return true;
+		} 
+		return false;
+	}
+	
+	bool operator < (const coord &loc) {
+		if (z < loc.z) {
+			return true;
+		} else if (y < loc.y) {
+			return true;
+		} else if (x < loc.x) {
+			return true;
+		} 
+		return false;
+	}
+	
+	bool operator == (const coord &loc) {
+		return x == loc.x && y == loc.y && z == loc.z;
+	}	
 };
 
 // Global area of world being rendered
@@ -46,6 +78,9 @@ extern int g_GrasscolorDepth, g_FoliageDepth;
 extern uint8_t *g_Terrain, *g_Light;
 // 2D array to store min and max block height per X/Z - it's 2 bytes per index, upper for highest, lower for lowest (don't ask!)
 extern uint16_t *g_HeightMap;
+// maps for tile entities, since using an array for variable width data that wont have
+// an allocation at every index seems dumb
+extern std::map<coord, std::string, coord> TileEntities;
 
 // If output is to be split up (for google maps etc) this contains the path to output to, NULL otherwise
 extern char *g_TilePath;
